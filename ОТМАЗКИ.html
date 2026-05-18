@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>ОтмазОК — генератор гениальных отмазок</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap&subset=cyrillic" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #f9fafb;
+    }
+    .shadow-sm {
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .sidebar {
+      transition: transform 0.3s ease-in-out;
+    }
+    .sidebar.open {
+      transform: translateX(0);
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        position: fixed;
+        z-index: 50;
+        height: 100%;
+      }
+    }
+    .bubble-user {
+      background: #4f46e5;
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+    .bubble-bot {
+      background: white;
+      border: 1px solid #e5e7eb;
+      color: #1f2937;
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+    .excuse-card {
+      background: #fef9c3;
+      border-left: 4px solid #eab308;
+    }
+    .modal-content {
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 h-screen flex flex-col">
+
+<div id="overlay" class="fixed inset-0 bg-black/40 z-40 hidden" onclick="toggleSidebar()"></div>
+
+<div class="flex h-screen relative overflow-hidden">
+  <!-- Левая панель: арсенал отмазок -->
+  <aside id="sidebar" class="sidebar w-72 bg-white border-r border-gray-200 flex flex-col shadow-sm shrink-0">
+    <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold text-indigo-600">Отмаз<span class="text-gray-900">ОК</span></h1>
+        <p class="text-xs text-gray-500 mt-1">твой персональный алиби-генератор</p>
+      </div>
+      <button onclick="toggleSidebar()" class="md:hidden text-gray-400 hover:text-gray-600">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Статус креативности -->
+    <div class="px-6 py-4 border-b border-gray-100">
+      <div class="text-xs font-medium text-gray-400 uppercase tracking-wide">Уровень креативности</div>
+      <div class="mt-2">
+        <p class="text-sm font-semibold text-gray-700" id="creative-stage-name">Бытовая фантазия</p>
+        <div class="w-full bg-gray-200 rounded-full h-2 mt-1.5">
+          <div id="stage-progress-bar" class="bg-indigo-500 h-2 rounded-full" style="width: 15%"></div>
+        </div>
+        <p class="text-xs text-gray-400 mt-1" id="stage-counter">Ранг 1 из 7</p>
+      </div>
+    </div>
+
+    <!-- Коллекция отмазок -->
+    <div class="px-6 py-4 border-b border-gray-100">
+      <button onclick="openModal('modal-excuses-list')" class="w-full text-left hover:bg-gray-50 rounded-md transition -m-2 p-2">
+        <div class="text-xs font-medium text-gray-400 uppercase tracking-wide">Моя коллекция</div>
+        <div class="mt-2 text-sm text-gray-500" id="saved-excuses-status">0 сохранено</div>
+        <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1"><div id="excuse-progress-bar" class="bg-amber-400 h-1.5 rounded-full" style="width: 0%"></div></div>
+      </button>
+    </div>
+
+    <!-- История генераций -->
+    <div class="px-6 py-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50" onclick="openModal('modal-history')">
+      <div class="text-xs font-medium text-gray-400 uppercase tracking-wide">История генераций</div>
+      <div class="mt-2 text-sm text-gray-500">Хронология идей</div>
+    </div>
+
+    <!-- Секретный раздел -->
+    <div class="px-6 py-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50" onclick="openModal('modal-secret')">
+      <div class="text-xs font-medium text-gray-400 uppercase tracking-wide">Секретный раздел</div>
+      <div class="mt-2 text-sm text-gray-500 flex items-center gap-1">🔞 Только для взрослых</div>
+    </div>
+
+    <nav class="mt-auto px-4 py-4 space-y-2">
+      <button class="w-full text-left text-sm text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-2 rounded-md transition" onclick="openModal('modal-profile')">
+        👤 Профиль отмазчика
+      </button>
+    </nav>
+  </aside>
+
+  <!-- Правая часть: Чат с ОтмазОК -->
+  <main class="flex-1 flex flex-col min-w-0 bg-gray-50">
+    <header class="h-14 border-b border-gray-200 bg-white flex items-center px-4 shadow-sm gap-3 shrink-0">
+      <button onclick="toggleSidebar()" class="md:hidden text-gray-500 hover:text-gray-700">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+      <h2 class="font-semibold text-gray-700 flex items-center gap-2">🦾 Чат с ОтмазОК</h2>
+    </header>
+
+    <div id="chat-area" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+      <!-- Приветствие -->
+      <div class="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm max-w-2xl mx-auto">
+        <p class="text-gray-800 leading-relaxed"><span class="font-bold text-indigo-600">ОтмазОК</span> — ИИ, который вытащит тебя из любой ситуации. Опоздал на работу? Забыл годовщину? Нужно срочно свалить со встречи?</p>
+        <p class="mt-2 text-gray-800">Я генерирую отмазки любой степени правдоподобности: от «пробки в 10 баллов» до «инопланетного вторжения». Сохраняй лучшие в коллекцию.</p>
+        <p class="mt-3 text-gray-600 text-sm italic">Выбери сценарий или напиши свою ситуацию внизу.</p>
+      </div>
+
+      <div class="max-w-2xl mx-auto space-y-3">
+        <p class="text-sm font-medium text-gray-500">🎯 Быстрые сценарии:</p>
+        <div class="flex flex-wrap gap-3">
+          <button onclick="quickExcuse('boss')" class="bg-white border border-gray-300 hover:border-indigo-400 hover:shadow-md rounded-xl px-5 py-3 text-gray-700 transition-all flex items-center gap-2"><span>👔</span><span>Для начальника</span></button>
+          <button onclick="quickExcuse('partner')" class="bg-white border border-gray-300 hover:border-pink-400 hover:shadow-md rounded-xl px-5 py-3 text-gray-700 transition-all flex items-center gap-2"><span>💔</span><span>Для партнёра</span></button>
+          <button onclick="quickExcuse('friends')" class="bg-white border border-gray-300 hover:border-green-400 hover:shadow-md rounded-xl px-5 py-3 text-gray-700 transition-all flex items-center gap-2"><span>🍻</span><span>Перед друзьями</span></button>
+          <button onclick="quickExcuse('school')" class="bg-white border border-gray-300 hover:border-blue-400 hover:shadow-md rounded-xl px-5 py-3 text-gray-700 transition-all flex items-center gap-2"><span>📚</span><span>Учителю/преподу</span></button>
+          <button onclick="quickExcuse('random')" class="bg-white border border-gray-300 hover:border-purple-400 hover:shadow-md rounded-xl px-5 py-3 text-gray-700 transition-all flex items-center gap-2"><span>🎲</span><span>Случайная гениальность</span></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Поле ввода -->
+    <div class="border-t border-gray-200 bg-white flex items-center px-4 py-3 gap-2 shadow-inner shrink-0">
+      <button class="text-gray-400 hover:text-indigo-500 transition p-1" onclick="openModal('modal-excuses-list')" title="Моя коллекция">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+      </button>
+      <button class="text-gray-400 hover:text-indigo-500 transition p-1" onclick="startVoiceInput()" title="Голосовой ввод (демо)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
+      <input type="text" id="user-input" placeholder="Опиши ситуацию, например: «Я проспал собеседование»..." class="flex-1 border border-gray-300 rounded-full px-5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400" onkeydown="if(event.key==='Enter')sendMessage()" />
+      <button onclick="sendMessage()" class="text-indigo-600 hover:text-indigo-800 transition p-1">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </main>
+</div>
+
+<!-- МОДАЛЬНЫЕ ОКНА -->
+
+<!-- Моя коллекция отмазок -->
+<div id="modal-excuses-list" class="fixed inset-0 bg-black/40 z-50 hidden items-center justify-center flex p-4">
+  <div class="bg-white rounded-2xl p-6 max-w-lg w-full shadow-xl modal-content">
+    <h3 class="text-xl font-bold mb-3">📦 Моя коллекция отмазок</h3>
+    <div id="saved-excuses-container" class="space-y-3 max-h-96 overflow-y-auto"></div>
+    <div class="flex justify-between mt-4"><button onclick="clearAllExcuses()" class="px-4 py-2 bg-red-50 text-red-600 rounded-lg text-sm">🗑 Очистить всё</button><button onclick="closeModal('modal-excuses-list')" class="px-4 py-2 bg-gray-200 rounded-lg">Закрыть</button></div>
+  </div>
+</div>
+
+<!-- История генераций -->
+<div id="modal-history" class="fixed inset-0 bg-black/40 z-50 hidden items-center justify-center flex p-4">
+  <div class="bg-white rounded-2xl p-6 max-w-lg w-full shadow-xl modal-content">
+    <h3 class="text-xl font-bold mb-3">📜 История генераций</h3>
+    <div id="history-container" class="space-y-2 text-sm text-gray-600 max-h-80 overflow-y-auto"></div>
+    <div class="flex justify-end mt-4"><button onclick="closeModal('modal-history')" class="px-4 py-2 bg-gray-200 rounded-lg">Закрыть</button></div>
+  </div>
+</div>
+
+<!-- Секретный раздел -->
+<div id="modal-secret" class="fixed inset-0 bg-black/40 z-50 hidden items-center justify-center flex p-4">
+  <div class="bg-gray-900 text-white rounded-2xl p-6 max-w-lg w-full shadow-xl modal-content">
+    <h3 class="text-xl font-bold mb-3">🔞 Секретный раздел</h3>
+    <p class="text-gray-300 mb-4">Отмазки 18+ (творческий режим). Здесь собираются самые дерзкие и абсурдные варианты. Используй с осторожностью.</p>
+    <div id="secret-excuses-container" class="space-y-2 max-h-64 overflow-y-auto"></div>
+    <button onclick="generateSecretExcuse()" class="mt-4 w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700">🎲 Сгенерировать секретную отмазку</button>
+    <div class="flex justify-end mt-4"><button onclick="closeModal('modal-secret')" class="px-4 py-2 bg-gray-700 rounded-lg">Закрыть</button></div>
+  </div>
+</div>
+
+<!-- Профиль -->
+<div id="modal-profile" class="fixed inset-0 bg-black/40 z-50 hidden items-center justify-center flex p-4">
+  <div class="bg-white rounded-2xl p-6 max-w-lg w-full shadow-xl">
+    <h3 class="text-xl font-bold mb-3">👤 Профиль отмазчика</h3>
+    <div class="space-y-3">
+      <div><label class="block text-sm font-medium text-gray-700">Твой никнейм</label><input type="text" id="profile-nickname" placeholder="Мастер отмазок" class="w-full border rounded-lg px-3 py-2 mt-1" /></div>
+      <div><label class="block text-sm font-medium text-gray-700">Любимая категория</label><select id="profile-category" class="w-full border rounded-lg px-3 py-2 mt-1"><option>Работа</option><option>Отношения</option><option>Друзья</option><option>Универсальная</option></select></div>
+      <button onclick="saveProfile()" class="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-medium hover:bg-indigo-700">Сохранить</button>
+    </div>
+    <div class="flex justify-end mt-4"><button onclick="closeModal('modal-profile')" class="px-4 py-2 bg-gray-200 rounded-lg">Закрыть</button></div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // ---------- СОСТОЯНИЕ ----------
+    const creativityStages = [
+      { title: 'Бытовая фантазия', width: 15 },
+      { title: 'Офисный выдумщик', width: 30 },
+      { title: 'Мастер отговорок', width: 45 },
+      { title: 'Гений импровизации', width: 60 },
+      { title: 'Легендарный сказочник', width: 75 },
+      { title: 'Оскар за лучшую роль', width: 90 },
+      { title: 'БОГ ОТМАЗОК', width: 100 }
+    ];
+    let currentStage = parseInt(localStorage.getItem('otmazok_stage') || '0');
+    let savedExcuses = JSON.parse(localStorage.getItem('otmazok_excuses') || '[]');
+    let historyLog = JSON.parse(localStorage.getItem('otmazok_history') || '[]');
+    let secretExcuses = JSON.parse(localStorage.getItem('otmazok_secret') || '[]');
+    let profile = JSON.parse(localStorage.getItem('otmazok_profile') || '{nickname: "", category: "Работа"}');
+
+    // ---------- UI обновления ----------
+    function updateStageUI() {
+      document.getElementById('creative-stage-name').textContent = creativityStages[currentStage].title;
+      document.getElementById('stage-progress-bar').style.width = creativityStages[currentStage].width + '%';
+      document.getElementById('stage-counter').textContent = `Ранг ${currentStage+1} из ${creativityStages.length}`;
+    }
+    function updateSavedExcusesUI() {
+      document.getElementById('saved-excuses-status').textContent = savedExcuses.length + ' сохранено';
+      let max = 15;
+      document.getElementById('excuse-progress-bar').style.width = Math.min(100, (savedExcuses.length/max)*100) + '%';
+    }
+    function renderSavedExcusesModal() {
+      let container = document.getElementById('saved-excuses-container');
+      if (!container) return;
+      if (savedExcuses.length === 0) {
+        container.innerHTML = '<p class="text-gray-400 text-center py-6">Пока пусто. Сохраняй отмазки кнопкой 💾</p>';
+        return;
+      }
+      container.innerHTML = savedExcuses.map((e, i) => `
+        <div class="bg-gray-50 p-3 rounded-xl flex justify-between items-start">
+          <div><p class="text-gray-800">${e.text}</p><p class="text-xs text-gray-400 mt-1">${e.category} · ${e.date}</p></div>
+          <button onclick="deleteExcuse(${i})" class="text-red-400 hover:text-red-600 ml-2">✕</button>
+        </div>
+      `).join('');
+    }
+    function renderHistoryModal() {
+      let container = document.getElementById('history-container');
+      if (!container) return;
+      if (historyLog.length === 0) {
+        container.innerHTML = '<p class="text-gray-400 text-center py-6">История пуста.</p>';
+        return;
+      }
+      container.innerHTML = historyLog.slice().reverse().map(h => `<div class="border-b pb-2"><span class="font-medium">${h.prompt}</span><br><span class="text-indigo-600">→ ${h.excuse}</span></div>`).join('');
+    }
+    function renderSecretModal() {
+      let container = document.getElementById('secret-excuses-container');
+      if (!container) return;
+      if (secretExcuses.length === 0) {
+        container.innerHTML = '<p class="text-gray-400 text-center">Тайных отмазок пока нет.</p>';
+        return;
+      }
+      container.innerHTML = secretExcuses.map(e => `<p class="border-b border-gray-700 pb-1">🔞 ${e}</p>`).join('');
+    }
+
+    // ---------- Генерация отмазок (креативное ядро) ----------
+    const excuseDatabase = {
+      boss: [
+        "Переговоры с зарубежным партнёром затянулись из-за разницы в часовых поясах.",
+        "Срочно чинил сервер, без меня бы всё упало. Я как супергерой, только в тапочках.",
+        "Попал в лифт с гендиректором, пришлось презентовать идею. Он в восторге.",
+        "Участвовал в донорской акции, спасал жизни. Не мог отойти.",
+        "Моя собака съела пропуск. Пришлось ждать курьера с дубликатом."
+      ],
+      partner: [
+        "Заказывал для тебя сюрприз, но доставка задерживается. Хотел идеальный вечер.",
+        "Помогал бабушке с настройкой интернета, она без сериалов не может.",
+        "Внезапно встретил одноклассника, который спас мне жизнь в 5 классе. Не мог просто уйти.",
+        "Готовил тебе романтический ужин, но сломалась духовка. Пришлось всё начинать заново.",
+        "Застрял в книжном: искал ту самую книгу, о которой ты говорила три месяца назад."
+      ],
+      friends: [
+        "Извините, перепутал дни. Думал, сегодня пятница, а оказалось — всё ещё четверг.",
+        "У меня дома прорвало трубу, и я в роли сантехника. Эпичное зрелище.",
+        "Случайно заснул за просмотром документалки про ленивцев. Ирония судьбы.",
+        "Телефон упал в аквариум. Только восстановил контакты.",
+        "Медитировал и потерял счёт времени. Достиг нирваны, но опоздал."
+      ],
+      school: [
+        "Домашнее задание съел хомяк. Буквально. Пришлось спасать его у ветеринара.",
+        "Готовил доклад о космосе и случайно применил теорию относительности — время замедлилось.",
+        "Помогал полиции составить фоторобот преступника. Гражданский долг!",
+        "Застрял в пробке из-за парада уток. Они шли очень медленно.",
+        "Мой Wi-Fi упал в параллельную вселенную. Пришлось ждать восстановления."
+      ]
+    };
+
+    function getRandomExcuse(category) {
+      let arr = excuseDatabase[category] || excuseDatabase.random || excuseDatabase.boss;
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function generateCreativeExcuse(promptText) {
+      let lower = promptText.toLowerCase();
+      if (lower.includes('начальник') || lower.includes('работ') || lower.includes('опоздал на работу')) return getRandomExcuse('boss');
+      if (lower.includes('жена') || lower.includes('муж') || lower.includes('партнёр') || lower.includes('годовщина')) return getRandomExcuse('partner');
+      if (lower.includes('друг') || lower.includes('тусовка') || lower.includes('встреча')) return getRandomExcuse('friends');
+      if (lower.includes('учител') || lower.includes('препод') || lower.includes('школ') || lower.includes('универ')) return getRandomExcuse('school');
+      return `В ответ на «${promptText}»: инопланетяне похитили мой будильник, поэтому я опоздал. Доказательства? Они стёрли память.`;
+    }
+
+    function addMessage(role, text, isExcuseCard = false) {
+      let area = document.getElementById('chat-area');
+      let div = document.createElement('div');
+      div.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'} mb-4`;
+      let bubbleClass = role === 'user' ? 'bubble-user' : (isExcuseCard ? 'excuse-card' : 'bubble-bot');
+      div.innerHTML = `<div class="max-w-[80%] rounded-2xl px-4 py-3 ${bubbleClass}">${text}</div>`;
+      area.appendChild(div);
+      area.scrollTop = area.scrollHeight;
+    }
+
+    function saveExcuseToCollection(text, category) {
+      savedExcuses.push({ text, category, date: new Date().toLocaleDateString() });
+      localStorage.setItem('otmazok_excuses', JSON.stringify(savedExcuses));
+      updateSavedExcusesUI();
+      renderSavedExcusesModal();
+    }
+
+    window.sendMessage = function() {
+      let input = document.getElementById('user-input');
+      let msg = input.value.trim();
+      if (!msg) return;
+      addMessage('user', msg);
+      historyLog.push({ prompt: msg, excuse: '', timestamp: new Date().toISOString() });
+      input.value = '';
+
+      setTimeout(() => {
+        let excuse = generateCreativeExcuse(msg);
+        addMessage('bot', '🧠 ' + excuse, true);
+        historyLog[historyLog.length-1].excuse = excuse;
+        localStorage.setItem('otmazok_history', JSON.stringify(historyLog));
+
+        let saveBtn = document.createElement('button');
+        saveBtn.textContent = '💾 Сохранить в коллекцию';
+        saveBtn.className = 'mt-2 text-xs bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full hover:bg-indigo-200 transition';
+        saveBtn.onclick = () => { saveExcuseToCollection(excuse, 'Пользовательская'); saveBtn.remove(); };
+        let lastBotMsg = document.querySelectorAll('#chat-area .flex.justify-start .max-w-[80%]');
+        if (lastBotMsg.length) lastBotMsg[lastBotMsg.length-1].appendChild(saveBtn);
+      }, 600);
+    };
+
+    window.quickExcuse = function(category) {
+      let excuse = getRandomExcuse(category);
+      addMessage('user', `Нужна отмазка: ${category}`);
+      addMessage('bot', '🎭 ' + excuse, true);
+      historyLog.push({ prompt: category, excuse, timestamp: new Date().toISOString() });
+      localStorage.setItem('otmazok_history', JSON.stringify(historyLog));
+    };
+
+    window.generateSecretExcuse = function() {
+      let secret = "Я не мог прийти, потому что участвовал в подпольном турнире по поеданию острого перца. Занял второе место.";
+      secretExcuses.push(secret);
+      localStorage.setItem('otmazok_secret', JSON.stringify(secretExcuses));
+      renderSecretModal();
+      addMessage('bot', '🔞 Секретная отмазка добавлена в раздел.', false);
+    };
+
+    // ---------- Модальные окна и утилиты ----------
+    window.openModal = (id) => { document.getElementById(id).classList.remove('hidden'); if(id==='modal-excuses-list') renderSavedExcusesModal(); if(id==='modal-history') renderHistoryModal(); if(id==='modal-secret') renderSecretModal(); };
+    window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
+    window.toggleSidebar = () => {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('hidden');
+    };
+    window.deleteExcuse = (index) => { savedExcuses.splice(index,1); localStorage.setItem('otmazok_excuses', JSON.stringify(savedExcuses)); updateSavedExcusesUI(); renderSavedExcusesModal(); };
+    window.clearAllExcuses = () => { savedExcuses = []; localStorage.removeItem('otmazok_excuses'); updateSavedExcusesUI(); renderSavedExcusesModal(); };
+    window.saveProfile = () => {
+      profile.nickname = document.getElementById('profile-nickname').value;
+      profile.category = document.getElementById('profile-category').value;
+      localStorage.setItem('otmazok_profile', JSON.stringify(profile));
+      closeModal('modal-profile');
+      addMessage('bot', '👤 Профиль обновлён!');
+    };
+    window.startVoiceInput = () => alert('🎤 Голосовой ввод (демо): «Алиса, придумай отмазку!»');
+
+    // Закрытие по клику вне модалки
+    document.querySelectorAll('[id^="modal-"]').forEach(modal => {
+      modal.addEventListener('click', function(e) { if (e.target === this) closeModal(this.id); });
+    });
+
+    // Инициализация
+    updateStageUI();
+    updateSavedExcusesUI();
+    if (profile.nickname) document.getElementById('profile-nickname').value = profile.nickname;
+    document.getElementById('profile-category').value = profile.category;
+
+    console.log('🦾 ОтмазОК готов генерировать алиби.');
+  })();
+</script>
+</body>
+</html>
