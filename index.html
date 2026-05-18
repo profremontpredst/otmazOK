@@ -55,7 +55,7 @@
 <div id="overlay" class="fixed inset-0 bg-black/40 z-40 hidden" onclick="toggleSidebar()"></div>
 
 <div class="flex h-screen relative overflow-hidden">
-  <!-- Левая панель: арсенал отмазок -->
+  <!-- Левая панель -->
   <aside id="sidebar" class="sidebar w-72 bg-white border-r border-gray-200 flex flex-col shadow-sm shrink-0">
     <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
       <div>
@@ -67,7 +67,6 @@
       </button>
     </div>
 
-    <!-- Статус креативности -->
     <div class="px-6 py-4 border-b border-gray-100">
       <div class="text-xs font-medium text-gray-400 uppercase tracking-wide">Уровень креативности</div>
       <div class="mt-2">
@@ -79,7 +78,6 @@
       </div>
     </div>
 
-    <!-- Коллекция отмазок -->
     <div class="px-6 py-4 border-b border-gray-100">
       <button onclick="openModal('modal-excuses-list')" class="w-full text-left hover:bg-gray-50 rounded-md transition -m-2 p-2">
         <div class="text-xs font-medium text-gray-400 uppercase tracking-wide">Моя коллекция</div>
@@ -88,13 +86,11 @@
       </button>
     </div>
 
-    <!-- История генераций -->
     <div class="px-6 py-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50" onclick="openModal('modal-history')">
       <div class="text-xs font-medium text-gray-400 uppercase tracking-wide">История генераций</div>
       <div class="mt-2 text-sm text-gray-500">Хронология идей</div>
     </div>
 
-    <!-- Секретный раздел -->
     <div class="px-6 py-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50" onclick="openModal('modal-secret')">
       <div class="text-xs font-medium text-gray-400 uppercase tracking-wide">Секретный раздел</div>
       <div class="mt-2 text-sm text-gray-500 flex items-center gap-1">🔞 Только для взрослых</div>
@@ -107,7 +103,7 @@
     </nav>
   </aside>
 
-  <!-- Правая часть: Чат с ОтмазОК -->
+  <!-- Чат -->
   <main class="flex-1 flex flex-col min-w-0 bg-gray-50">
     <header class="h-14 border-b border-gray-200 bg-white flex items-center px-4 shadow-sm gap-3 shrink-0">
       <button onclick="toggleSidebar()" class="md:hidden text-gray-500 hover:text-gray-700">
@@ -117,7 +113,6 @@
     </header>
 
     <div id="chat-area" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
-      <!-- Приветствие -->
       <div class="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm max-w-2xl mx-auto">
         <p class="text-gray-800 leading-relaxed"><span class="font-bold text-indigo-600">ОтмазОК</span> — ИИ, который вытащит тебя из любой ситуации. Опоздал на работу? Забыл годовщину? Нужно срочно свалить со встречи?</p>
         <p class="mt-2 text-gray-800">Я генерирую отмазки любой степени правдоподобности: от «пробки в 10 баллов» до «инопланетного вторжения». Сохраняй лучшие в коллекцию.</p>
@@ -141,8 +136,8 @@
       <button class="text-gray-400 hover:text-indigo-500 transition p-1" onclick="openModal('modal-excuses-list')" title="Моя коллекция">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
       </button>
-      <button class="text-gray-400 hover:text-indigo-500 transition p-1" onclick="startVoiceInput()" title="Голосовой ввод (демо)">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      <button id="mic-button" class="text-gray-400 hover:text-indigo-500 transition p-1" onclick="toggleVoiceInput()" title="Голосовой ввод">
+        <svg id="mic-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
       </button>
       <input type="text" id="user-input" placeholder="Опиши ситуацию, например: «Я проспал собеседование»..." class="flex-1 border border-gray-300 rounded-full px-5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400" onkeydown="if(event.key==='Enter')sendMessage()" />
       <button onclick="sendMessage()" class="text-indigo-600 hover:text-indigo-800 transition p-1">
@@ -152,9 +147,7 @@
   </main>
 </div>
 
-<!-- МОДАЛЬНЫЕ ОКНА -->
-
-<!-- Моя коллекция отмазок -->
+<!-- МОДАЛИ -->
 <div id="modal-excuses-list" class="fixed inset-0 bg-black/40 z-50 hidden items-center justify-center flex p-4">
   <div class="bg-white rounded-2xl p-6 max-w-lg w-full shadow-xl modal-content">
     <h3 class="text-xl font-bold mb-3">📦 Моя коллекция отмазок</h3>
@@ -163,7 +156,6 @@
   </div>
 </div>
 
-<!-- История генераций -->
 <div id="modal-history" class="fixed inset-0 bg-black/40 z-50 hidden items-center justify-center flex p-4">
   <div class="bg-white rounded-2xl p-6 max-w-lg w-full shadow-xl modal-content">
     <h3 class="text-xl font-bold mb-3">📜 История генераций</h3>
@@ -172,18 +164,16 @@
   </div>
 </div>
 
-<!-- Секретный раздел -->
 <div id="modal-secret" class="fixed inset-0 bg-black/40 z-50 hidden items-center justify-center flex p-4">
   <div class="bg-gray-900 text-white rounded-2xl p-6 max-w-lg w-full shadow-xl modal-content">
     <h3 class="text-xl font-bold mb-3">🔞 Секретный раздел</h3>
-    <p class="text-gray-300 mb-4">Отмазки 18+ (творческий режим). Здесь собираются самые дерзкие и абсурдные варианты. Используй с осторожностью.</p>
+    <p class="text-gray-300 mb-4">Отмазки 18+ (творческий режим). Здесь собираются самые дерзкие и абсурдные варианты.</p>
     <div id="secret-excuses-container" class="space-y-2 max-h-64 overflow-y-auto"></div>
     <button onclick="generateSecretExcuse()" class="mt-4 w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700">🎲 Сгенерировать секретную отмазку</button>
     <div class="flex justify-end mt-4"><button onclick="closeModal('modal-secret')" class="px-4 py-2 bg-gray-700 rounded-lg">Закрыть</button></div>
   </div>
 </div>
 
-<!-- Профиль -->
 <div id="modal-profile" class="fixed inset-0 bg-black/40 z-50 hidden items-center justify-center flex p-4">
   <div class="bg-white rounded-2xl p-6 max-w-lg w-full shadow-xl">
     <h3 class="text-xl font-bold mb-3">👤 Профиль отмазчика</h3>
@@ -198,6 +188,9 @@
 
 <script>
   (function() {
+    // ---------- КОНФИГУРАЦИЯ ----------
+    const API_BASE = "https://otmazok-backe.onrender.com";
+    
     // ---------- СОСТОЯНИЕ ----------
     const creativityStages = [
       { title: 'Бытовая фантазия', width: 15 },
@@ -212,19 +205,122 @@
     let savedExcuses = JSON.parse(localStorage.getItem('otmazok_excuses') || '[]');
     let historyLog = JSON.parse(localStorage.getItem('otmazok_history') || '[]');
     let secretExcuses = JSON.parse(localStorage.getItem('otmazok_secret') || '[]');
-    let profile = JSON.parse(localStorage.getItem('otmazok_profile') || '{nickname: "", category: "Работа"}');
+    let profile = JSON.parse(localStorage.getItem('otmazok_profile') || '{"nickname":"", "category":"Работа"}');
 
-    // ---------- UI обновления ----------
+    // Голосовой ввод
+    let recognition = null;
+    let isListening = false;
+
+    // ---------- ИНИЦИАЛИЗАЦИЯ ГОЛОСА ----------
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        console.warn('Web Speech API не поддерживается в этом браузере.');
+        return null;
+      }
+      const rec = new SpeechRecognition();
+      rec.lang = 'ru-RU';
+      rec.interimResults = false;
+      rec.maxAlternatives = 1;
+      
+      rec.onstart = () => {
+        isListening = true;
+        document.getElementById('mic-icon').style.color = '#ef4444';
+        document.getElementById('mic-button').classList.add('animate-pulse');
+      };
+      
+      rec.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById('user-input').value = transcript;
+        // Авто-отправка, если фраза не пустая
+        if (transcript.trim()) {
+          sendMessage();
+        }
+      };
+      
+      rec.onerror = (event) => {
+        console.error('Ошибка распознавания:', event.error);
+        stopVoiceInput();
+        addMessage('bot', '🎤 Не удалось распознать речь. Попробуй ещё раз или напиши текстом.', false);
+      };
+      
+      rec.onend = () => {
+        stopVoiceInput();
+      };
+      
+      return rec;
+    }
+
+    window.toggleVoiceInput = function() {
+      if (!recognition) {
+        recognition = initSpeechRecognition();
+      }
+      if (!recognition) {
+        alert('Голосовой ввод не поддерживается вашим браузером. Попробуйте Chrome или Edge.');
+        return;
+      }
+      
+      if (isListening) {
+        stopVoiceInput();
+      } else {
+        try {
+          recognition.start();
+        } catch (e) {
+          console.error('Ошибка старта распознавания:', e);
+        }
+      }
+    };
+
+    function stopVoiceInput() {
+      if (recognition && isListening) {
+        try { recognition.stop(); } catch(e) {}
+      }
+      isListening = false;
+      const micIcon = document.getElementById('mic-icon');
+      if (micIcon) micIcon.style.color = '';
+      const micBtn = document.getElementById('mic-button');
+      if (micBtn) micBtn.classList.remove('animate-pulse');
+    }
+
+    // ---------- API ЗАПРОСЫ ----------
+    async function fetchFromBackend(category = null, prompt = null) {
+      const payload = {};
+      if (category) payload.category = category;
+      if (prompt) payload.prompt = prompt;
+      
+      try {
+        const response = await fetch(`${API_BASE}/generate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || `Ошибка ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return data.excuse;
+      } catch (error) {
+        console.error('Ошибка запроса к бэкенду:', error);
+        return '⚠️ Сервер временно недоступен. Попробуй позже. (Демо: меня похитили инопланетяне)';
+      }
+    }
+
+    // ---------- UI ФУНКЦИИ ----------
     function updateStageUI() {
       document.getElementById('creative-stage-name').textContent = creativityStages[currentStage].title;
       document.getElementById('stage-progress-bar').style.width = creativityStages[currentStage].width + '%';
       document.getElementById('stage-counter').textContent = `Ранг ${currentStage+1} из ${creativityStages.length}`;
     }
+
     function updateSavedExcusesUI() {
       document.getElementById('saved-excuses-status').textContent = savedExcuses.length + ' сохранено';
       let max = 15;
       document.getElementById('excuse-progress-bar').style.width = Math.min(100, (savedExcuses.length/max)*100) + '%';
     }
+
     function renderSavedExcusesModal() {
       let container = document.getElementById('saved-excuses-container');
       if (!container) return;
@@ -239,6 +335,7 @@
         </div>
       `).join('');
     }
+
     function renderHistoryModal() {
       let container = document.getElementById('history-container');
       if (!container) return;
@@ -248,6 +345,7 @@
       }
       container.innerHTML = historyLog.slice().reverse().map(h => `<div class="border-b pb-2"><span class="font-medium">${h.prompt}</span><br><span class="text-indigo-600">→ ${h.excuse}</span></div>`).join('');
     }
+
     function renderSecretModal() {
       let container = document.getElementById('secret-excuses-container');
       if (!container) return;
@@ -258,58 +356,22 @@
       container.innerHTML = secretExcuses.map(e => `<p class="border-b border-gray-700 pb-1">🔞 ${e}</p>`).join('');
     }
 
-    // ---------- Генерация отмазок (креативное ядро) ----------
-    const excuseDatabase = {
-      boss: [
-        "Переговоры с зарубежным партнёром затянулись из-за разницы в часовых поясах.",
-        "Срочно чинил сервер, без меня бы всё упало. Я как супергерой, только в тапочках.",
-        "Попал в лифт с гендиректором, пришлось презентовать идею. Он в восторге.",
-        "Участвовал в донорской акции, спасал жизни. Не мог отойти.",
-        "Моя собака съела пропуск. Пришлось ждать курьера с дубликатом."
-      ],
-      partner: [
-        "Заказывал для тебя сюрприз, но доставка задерживается. Хотел идеальный вечер.",
-        "Помогал бабушке с настройкой интернета, она без сериалов не может.",
-        "Внезапно встретил одноклассника, который спас мне жизнь в 5 классе. Не мог просто уйти.",
-        "Готовил тебе романтический ужин, но сломалась духовка. Пришлось всё начинать заново.",
-        "Застрял в книжном: искал ту самую книгу, о которой ты говорила три месяца назад."
-      ],
-      friends: [
-        "Извините, перепутал дни. Думал, сегодня пятница, а оказалось — всё ещё четверг.",
-        "У меня дома прорвало трубу, и я в роли сантехника. Эпичное зрелище.",
-        "Случайно заснул за просмотром документалки про ленивцев. Ирония судьбы.",
-        "Телефон упал в аквариум. Только восстановил контакты.",
-        "Медитировал и потерял счёт времени. Достиг нирваны, но опоздал."
-      ],
-      school: [
-        "Домашнее задание съел хомяк. Буквально. Пришлось спасать его у ветеринара.",
-        "Готовил доклад о космосе и случайно применил теорию относительности — время замедлилось.",
-        "Помогал полиции составить фоторобот преступника. Гражданский долг!",
-        "Застрял в пробке из-за парада уток. Они шли очень медленно.",
-        "Мой Wi-Fi упал в параллельную вселенную. Пришлось ждать восстановления."
-      ]
-    };
-
-    function getRandomExcuse(category) {
-      let arr = excuseDatabase[category] || excuseDatabase.random || excuseDatabase.boss;
-      return arr[Math.floor(Math.random() * arr.length)];
-    }
-
-    function generateCreativeExcuse(promptText) {
-      let lower = promptText.toLowerCase();
-      if (lower.includes('начальник') || lower.includes('работ') || lower.includes('опоздал на работу')) return getRandomExcuse('boss');
-      if (lower.includes('жена') || lower.includes('муж') || lower.includes('партнёр') || lower.includes('годовщина')) return getRandomExcuse('partner');
-      if (lower.includes('друг') || lower.includes('тусовка') || lower.includes('встреча')) return getRandomExcuse('friends');
-      if (lower.includes('учител') || lower.includes('препод') || lower.includes('школ') || lower.includes('универ')) return getRandomExcuse('school');
-      return `В ответ на «${promptText}»: инопланетяне похитили мой будильник, поэтому я опоздал. Доказательства? Они стёрли память.`;
-    }
-
     function addMessage(role, text, isExcuseCard = false) {
       let area = document.getElementById('chat-area');
       let div = document.createElement('div');
       div.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'} mb-4`;
       let bubbleClass = role === 'user' ? 'bubble-user' : (isExcuseCard ? 'excuse-card' : 'bubble-bot');
       div.innerHTML = `<div class="max-w-[80%] rounded-2xl px-4 py-3 ${bubbleClass}">${text}</div>`;
+      area.appendChild(div);
+      area.scrollTop = area.scrollHeight;
+      return div;
+    }
+
+    function addSystemMessage(text) {
+      let area = document.getElementById('chat-area');
+      let div = document.createElement('div');
+      div.className = 'text-center text-sm text-gray-400 py-2';
+      div.textContent = text;
       area.appendChild(div);
       area.scrollTop = area.scrollHeight;
     }
@@ -319,56 +381,114 @@
       localStorage.setItem('otmazok_excuses', JSON.stringify(savedExcuses));
       updateSavedExcusesUI();
       renderSavedExcusesModal();
+      
+      // Повышаем уровень креативности
+      if (currentStage < creativityStages.length - 1 && savedExcuses.length % 3 === 0) {
+        currentStage++;
+        localStorage.setItem('otmazok_stage', currentStage);
+        updateStageUI();
+        addSystemMessage(`🎉 Уровень креативности повышен: ${creativityStages[currentStage].title}`);
+      }
     }
 
-    window.sendMessage = function() {
+    // ---------- ОСНОВНЫЕ ФУНКЦИИ ----------
+    window.sendMessage = async function() {
       let input = document.getElementById('user-input');
       let msg = input.value.trim();
       if (!msg) return;
+      
       addMessage('user', msg);
       historyLog.push({ prompt: msg, excuse: '', timestamp: new Date().toISOString() });
       input.value = '';
-
-      setTimeout(() => {
-        let excuse = generateCreativeExcuse(msg);
-        addMessage('bot', '🧠 ' + excuse, true);
-        historyLog[historyLog.length-1].excuse = excuse;
-        localStorage.setItem('otmazok_history', JSON.stringify(historyLog));
-
-        let saveBtn = document.createElement('button');
-        saveBtn.textContent = '💾 Сохранить в коллекцию';
-        saveBtn.className = 'mt-2 text-xs bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full hover:bg-indigo-200 transition';
-        saveBtn.onclick = () => { saveExcuseToCollection(excuse, 'Пользовательская'); saveBtn.remove(); };
-        let lastBotMsg = document.querySelectorAll('#chat-area .flex.justify-start .max-w-[80%]');
-        if (lastBotMsg.length) lastBotMsg[lastBotMsg.length-1].appendChild(saveBtn);
-      }, 600);
+      
+      addSystemMessage('⏳ Генерирую отмазку...');
+      let excuse = await fetchFromBackend(null, msg);
+      
+      // Удаляем системное сообщение
+      const systemMsgs = document.querySelectorAll('.text-center.text-sm.text-gray-400');
+      if (systemMsgs.length) systemMsgs[systemMsgs.length-1].remove();
+      
+      addMessage('bot', '🧠 ' + excuse, true);
+      historyLog[historyLog.length-1].excuse = excuse;
+      localStorage.setItem('otmazok_history', JSON.stringify(historyLog));
+      
+      // Кнопка сохранения
+      let saveBtn = document.createElement('button');
+      saveBtn.textContent = '💾 Сохранить';
+      saveBtn.className = 'mt-2 text-xs bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full hover:bg-indigo-200 transition';
+      saveBtn.onclick = () => { saveExcuseToCollection(excuse, 'Пользовательская'); saveBtn.remove(); };
+      const lastBotMsg = document.querySelectorAll('#chat-area .flex.justify-start .max-w-[80%]');
+      if (lastBotMsg.length) lastBotMsg[lastBotMsg.length-1].appendChild(saveBtn);
     };
 
-    window.quickExcuse = function(category) {
-      let excuse = getRandomExcuse(category);
-      addMessage('user', `Нужна отмазка: ${category}`);
+    window.quickExcuse = async function(category) {
+      const categoryNames = {
+        'boss': '👔 Для начальника',
+        'partner': '💔 Для партнёра',
+        'friends': '🍻 Перед друзьями',
+        'school': '📚 Учителю/преподу',
+        'random': '🎲 Случайная'
+      };
+      
+      addMessage('user', `Нужна отмазка: ${categoryNames[category] || category}`);
+      addSystemMessage('⏳ Генерирую...');
+      
+      let excuse = await fetchFromBackend(category, null);
+      
+      const systemMsgs = document.querySelectorAll('.text-center.text-sm.text-gray-400');
+      if (systemMsgs.length) systemMsgs[systemMsgs.length-1].remove();
+      
       addMessage('bot', '🎭 ' + excuse, true);
       historyLog.push({ prompt: category, excuse, timestamp: new Date().toISOString() });
       localStorage.setItem('otmazok_history', JSON.stringify(historyLog));
+      
+      let saveBtn = document.createElement('button');
+      saveBtn.textContent = '💾 Сохранить';
+      saveBtn.className = 'mt-2 text-xs bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full hover:bg-indigo-200 transition';
+      saveBtn.onclick = () => { saveExcuseToCollection(excuse, category); saveBtn.remove(); };
+      const lastBotMsg = document.querySelectorAll('#chat-area .flex.justify-start .max-w-[80%]');
+      if (lastBotMsg.length) lastBotMsg[lastBotMsg.length-1].appendChild(saveBtn);
     };
 
-    window.generateSecretExcuse = function() {
-      let secret = "Я не мог прийти, потому что участвовал в подпольном турнире по поеданию острого перца. Занял второе место.";
-      secretExcuses.push(secret);
+    window.generateSecretExcuse = async function() {
+      addSystemMessage('🔞 Генерирую секретную отмазку...');
+      const excuse = await fetchFromBackend('random', 'придумай максимально абсурдную взрослую отмазку 18+');
+      secretExcuses.push(excuse);
       localStorage.setItem('otmazok_secret', JSON.stringify(secretExcuses));
       renderSecretModal();
-      addMessage('bot', '🔞 Секретная отмазка добавлена в раздел.', false);
+      const systemMsgs = document.querySelectorAll('.text-center.text-sm.text-gray-400');
+      if (systemMsgs.length) systemMsgs[systemMsgs.length-1].remove();
+      addMessage('bot', '🔞 Добавлено в секретный раздел!', false);
     };
 
-    // ---------- Модальные окна и утилиты ----------
-    window.openModal = (id) => { document.getElementById(id).classList.remove('hidden'); if(id==='modal-excuses-list') renderSavedExcusesModal(); if(id==='modal-history') renderHistoryModal(); if(id==='modal-secret') renderSecretModal(); };
+    // ---------- МОДАЛЬНЫЕ ОКНА ----------
+    window.openModal = (id) => { 
+      document.getElementById(id).classList.remove('hidden'); 
+      if(id==='modal-excuses-list') renderSavedExcusesModal(); 
+      if(id==='modal-history') renderHistoryModal(); 
+      if(id==='modal-secret') renderSecretModal(); 
+    };
     window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
+    
     window.toggleSidebar = () => {
       document.getElementById('sidebar').classList.toggle('open');
       document.getElementById('overlay').classList.toggle('hidden');
     };
-    window.deleteExcuse = (index) => { savedExcuses.splice(index,1); localStorage.setItem('otmazok_excuses', JSON.stringify(savedExcuses)); updateSavedExcusesUI(); renderSavedExcusesModal(); };
-    window.clearAllExcuses = () => { savedExcuses = []; localStorage.removeItem('otmazok_excuses'); updateSavedExcusesUI(); renderSavedExcusesModal(); };
+    
+    window.deleteExcuse = (index) => { 
+      savedExcuses.splice(index,1); 
+      localStorage.setItem('otmazok_excuses', JSON.stringify(savedExcuses)); 
+      updateSavedExcusesUI(); 
+      renderSavedExcusesModal(); 
+    };
+    
+    window.clearAllExcuses = () => { 
+      savedExcuses = []; 
+      localStorage.removeItem('otmazok_excuses'); 
+      updateSavedExcusesUI(); 
+      renderSavedExcusesModal(); 
+    };
+    
     window.saveProfile = () => {
       profile.nickname = document.getElementById('profile-nickname').value;
       profile.category = document.getElementById('profile-category').value;
@@ -376,20 +496,25 @@
       closeModal('modal-profile');
       addMessage('bot', '👤 Профиль обновлён!');
     };
-    window.startVoiceInput = () => alert('🎤 Голосовой ввод (демо): «Алиса, придумай отмазку!»');
 
-    // Закрытие по клику вне модалки
+    // Закрытие модалок по клику вне
     document.querySelectorAll('[id^="modal-"]').forEach(modal => {
       modal.addEventListener('click', function(e) { if (e.target === this) closeModal(this.id); });
     });
 
-    // Инициализация
+    // ---------- ИНИЦИАЛИЗАЦИЯ ----------
     updateStageUI();
     updateSavedExcusesUI();
     if (profile.nickname) document.getElementById('profile-nickname').value = profile.nickname;
     document.getElementById('profile-category').value = profile.category;
+    
+    // Загрузка категорий с бэкенда (для проверки связи)
+    fetch(`${API_BASE}/categories`)
+      .then(res => res.json())
+      .then(data => console.log('✅ Бэкенд доступен, категории:', data.categories))
+      .catch(err => console.warn('⚠️ Не удалось загрузить категории:', err));
 
-    console.log('🦾 ОтмазОК готов генерировать алиби.');
+    console.log('🦾 ОтмазОК подключён к GigaChat и готов к работе.');
   })();
 </script>
 </body>
